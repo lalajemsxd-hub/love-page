@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>To My Favorite Person 🩷</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink-soft: #fdf0f0;
+    --pink-light: #fce4e4;
+    --pink-mid: #f5b8b8;
+    --pink-accent: #e07070;
+    --rose-dark: #8b2c2c;
+    --text-main: #3a2a2a;
+    --text-soft: #7a5c5c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--pink-soft);
+    font-family: 'Lora', Georgia, serif;
+    color: var(--text-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── Floating hearts background ── */
+  .hearts-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .heart-float {
+    position: absolute;
+    font-size: 14px;
+    color: #f0a0a0;
+    opacity: 0;
+    animation: floatUp linear infinite;
+  }
+
+  @keyframes floatUp {
+    0%   { opacity: 0; transform: translateY(0) scale(0.6); }
+    10%  { opacity: 0.45; }
+    85%  { opacity: 0.3; }
+    100% { opacity: 0; transform: translateY(-110vh) scale(1.1); }
+  }
+
+  /* ── Music player (fixed top) ── */
+  .music-player {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(16px);
+    border-radius: 60px;
+    padding: 10px 20px 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 30px rgba(180,100,100,0.15);
+    min-width: 260px;
+    animation: slideDown 0.8s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  @keyframes slideDown {
+    from { transform: translateX(-50%) translateY(-80px); opacity: 0; }
+    to   { transform: translateX(-50%) translateY(0);     opacity: 1; }
+  }
+
+  .disc {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #b83280, #9333ea, #6d28d9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    animation: spin 4s linear infinite;
+    position: relative;
+  }
+
+  .disc::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .music-info { flex: 1; min-width: 0; }
+  .music-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .music-status {
+    font-size: 9px;
+    color: #e07070;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .music-bar {
+    height: 3px;
+    background: #fce4e4;
+    border-radius: 4px;
+    margin-top: 5px;
+    position: relative;
+    overflow: hidden;
+    width: 120px;
+  }
+  .music-bar-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: linear-gradient(90deg, #e07070, #b83280);
+    border-radius: 4px;
+    width: 35%;
+    animation: progressBar 218s linear forwards;
+  }
+
+  @keyframes progressBar { to { width: 100%; } }
+
+  /* ── Main content ── */
+  .page { position: relative; z-index: 1; }
+
+  /* ── Hero section ── */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 110px;
+    padding-bottom: 60px;
+  }
+
+  /* ── Photo stack ── */
+  .photo-stack {
+    position: relative;
+    width: 270px;
+    height: 270px;
+    margin-bottom: 48px;
+    cursor: pointer;
+  }
+
+  .photo-card {
+    position: absolute;
+    width: 180px;
+    height: 230px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(140,60,60,0.18);
+    border: 3px solid white;
+    top: 50%;
+    left: 50%;
+    transform-origin: bottom center;
+    transition: transform 0.4s ease;
+  }
+
+  .photo-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Initial stacked look (centered) */
+.photo-card.p1 { 
+  transform: translate(-50%, -50%) rotate(-12deg) translate(-20px, 10px); 
+  z-index: 1; 
+}
+.photo-card.p2 { 
+  transform: translate(-50%, -50%) rotate(-4deg) translate(-10px, 5px);  
+  z-index: 2; 
+}
+.photo-card.p3 { 
+  transform: translate(-50%, -50%) rotate(4deg) translate(10px, 5px); 
+  z-index: 3; 
+}
+.photo-card.p4 { 
+  transform: translate(-50%, -50%) rotate(12deg) translate(20px, 10px); 
+  z-index: 4; 
+}
+
+/* Hover - evenly spaced (perfect symmetry) */
+.photo-stack:hover .p1 { 
+  transform: translate(-50%, -50%) rotate(-12deg) translate(-180px, -40px); 
+}
+.photo-stack:hover .p2 { 
+  transform: translate(-50%, -50%) rotate(-4deg) translate(-60px, -20px); 
+}
+.photo-stack:hover .p3 { 
+  transform: translate(-50%, -50%) rotate(4deg) translate(60px, -20px); 
+}
+.photo-stack:hover .p4 { 
+  transform: translate(-50%, -50%) rotate(12deg) translate(180px, -40px); 
+}
+
+  /* placeholder style */
+  .photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    gap: 6px;
+    color: rgba(255,255,255,0.8);
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 11px;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .ph1 { background: linear-gradient(135deg, #f8b4b4, #f48fb1); }
+  .ph2 { background: linear-gradient(135deg, #f9a8d4, #ec4899); }
+  .ph3 { background: linear-gradient(135deg, #fca5a5, #e07070); }
+  .ph4 { background: linear-gradient(135deg, #fbd5e0, #f472b6); }
+
+  .photo-hint {
+    font-size: 10px;
+    color: var(--text-soft);
+    text-align: center;
+    margin-top: -36px;
+    margin-bottom: 24px;
+    font-style: italic;
+    opacity: 0.7;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  /* ── Title ── */
+  .title-section {
+    text-align: center;
+    padding: 0 24px;
+    animation: fadeUp 1s 0.4s both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .main-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(42px, 8vw, 68px);
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+  }
+
+  /* ── Letter section ── */
+  .letter-section {
+    max-width: 580px;
+    margin: 0 auto;
+    padding: 20px 32px 80px;
+    animation: fadeUp 1s 0.7s both;
+  }
+
+  .greeting {
+    text-align: center;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text-main);
+    margin-bottom: 36px;
+    letter-spacing: 0.2px;
+  }
+
+  .letter-para {
+    text-align: center;
+    font-size: 15.5px;
+    line-height: 1.85;
+    color: var(--text-main);
+    margin-bottom: 42px;
+    font-style: normal;
+  }
+
+  .letter-closing {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-main);
+    margin-top: 8px;
+    margin-bottom: 52px;
+  }
+
+  /* ── Countdown ── */
+  .countdown-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 80px;
+    animation: fadeUp 1s 1s both;
+  }
+
+  .days-number {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(72px, 18vw, 120px);
+    font-weight: 800;
+    color: var(--rose-dark);
+    line-height: 1;
+    letter-spacing: -2px;
+  }
+
+  .days-label-big {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    margin-top: 4px;
+    margin-bottom: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .time-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .time-unit {
+    background: white;
+    border-radius: 14px;
+    padding: 14px 20px 12px;
+    min-width: 76px;
+    text-align: center;
+    box-shadow: 0 2px 16px rgba(180,100,100,0.1);
+  }
+
+  .time-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--rose-dark);
+    display: block;
+  }
+
+  .time-lbl {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-top: 2px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .time-sep {
+    font-size: 24px;
+    color: var(--pink-mid);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  /* ── Footer heart ── */
+  .footer-heart {
+    text-align: center;
+    padding-bottom: 48px;
+    font-size: 28px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.25); }
+  }
+
+  /* ── Photo upload tip ── */
+  .upload-tip {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.95);
+    border: 1px solid #fce4e4;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 11px;
+    color: var(--text-soft);
+    max-width: 220px;
+    line-height: 1.5;
+    box-shadow: 0 4px 20px rgba(180,100,100,0.1);
+    z-index: 50;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .upload-tip strong { color: var(--rose-dark); }
+  .upload-tip button {
+    margin-top: 8px;
+    background: none;
+    border: none;
+    color: var(--pink-accent);
+    cursor: pointer;
+    font-size: 10px;
+    font-family: inherit;
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating hearts -->
+<div class="hearts-bg" id="heartsContainer"></div>
+
+<!-- Music Player -->
+ <audio id="bgMusic" loop>
+  <source src="ithink.mp3" type="audio/mp3">
+</audio>
+<div class="music-player">
+  <div class="disc"></div>
+  <div class="music-info">
+    <div class="music-title">Elliot James Reay – All I Dream About Is You</div>
+    <div class="music-status">♫ Playing</div>
+    <div class="music-bar"><div class="music-bar-fill"></div></div>
+  </div>
+</div>
+
+<!-- Page -->
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="photo-stack" id="photoStack">
+      <br>
+      <div class="photo-card p1" id="card1">
+        <img src="mu.jpg" alt="">
+      </div>
+      <div class="photo-card p2" id="card2">
+        <img src="mo.jpg" alt="">
+      </div>
+      <div class="photo-card p3" id="card3">
+        <img src="mi.jpg" alt="">
+      </div>
+      <div class="photo-card p4" id="card4">
+        <img src="ma.jpg" alt="">
+      </div>
+    </div>
+    <p class="photo-hint">Hover over photos ↑ to spread them</p>
+
+    <div class="title-section">
+      <h1 class="main-title">To My Favorite<br>Person</h1>
+    </div>
+  </div>
+
+  <!-- Letter -->
+  <div class="letter-section">
+    <p class="greeting">Happy Birthday, <strong>Honey</strong> ❤️</p>
+
+    <p class="letter-para">
+      It's been 1 year, 5 months, and 20 days of having you in my life, and honestly, every single day with you is something I'm grateful for. We've been through so much together  hardships, challenges, and moments that tested us  but no matter what, we always found our way back to each other. That's what makes what we have so special.
+    </p>
+
+    <p class="letter-para">
+      You've always been there for me, supporting me, understanding me, and loving me even when things aren't easy. I know we're not perfect  we argue, we misunderstand each other sometimes  but what I love most is that we always choose to forgive, to fix things, and to stay. We don't give up on each other, and that means everything to me.
+    </p>
+
+    <p class="letter-para">
+      Thank you for being the sweet, caring, and loving girlfriend that you are. You make my world softer, lighter, and happier just by being in it. You're not just my partner  you're my safe place, my comfort, and my home.
+    </p>
+
+    <p class="letter-para">
+      I promise to keep choosing you, to keep loving you, and to keep growing with you no matter what comes our way. I'm so lucky to have you, and I wouldn't trade what we have for anything.
+    </p>
+
+    <p class="letter-para">I love you more than words can ever explain.</p>
+
+    <p class="letter-closing">Happy Birthday again, <strong>Honey</strong> ko. ❤️</p>
+  </div>
+
+  <!-- Countdown -->
+  <div class="countdown-section">
+    <div class="days-number" id="daysCount">512</div>
+    <br>
+    <div class="days-label-big">Days Together</div>
+    <div class="time-row">
+      <div class="time-unit">
+        <span class="time-val" id="hoursCount">00</span>
+        <span class="time-lbl">Hours</span>
+      </div>
+      <div class="time-sep">:</div>
+      <div class="time-unit">
+        <span class="time-val" id="minsCount">00</span>
+        <span class="time-lbl">Mins</span>
+      </div>
+      <div class="time-sep">:</div>
+      <div class="time-unit">
+        <span class="time-val" id="secsCount">00</span>
+        <span class="time-lbl">Secs</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-heart">❤️</div>
+
+</div>
+
+
+
+<script>
+// ── Generate floating hearts ──
+const container = document.getElementById('heartsContainer');
+const hearts = ['♥','❤','♡','🩷','💗','💕'];
+const positions = [5,10,15,22,30,38,46,54,62,70,78,85,90,95];
+
+positions.forEach((left, i) => {
+  const el = document.createElement('div');
+  el.className = 'heart-float';
+  el.style.left = left + '%';
+  el.style.bottom = '-5%';
+  el.style.fontSize  = (10 + Math.random() * 14) + 'px';
+  el.style.animationDuration = (12 + Math.random() * 18) + 's';
+  el.style.animationDelay   = (Math.random() * 14) + 's';
+  el.textContent = hearts[i % hearts.length];
+  container.appendChild(el);
+});
+
+// ── Countdown from relationship start date ──
+// October 1, 2024 — adjust this date if needed
+const startDate = new Date('2024-10-01T00:00:00');
+
+function updateCountdown() {
+  const now  = new Date();
+  const diff = now - startDate;
+
+  const totalSecs  = Math.floor(diff / 1000);
+  const days       = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours      = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const mins       = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const secs       = Math.floor((diff % (1000 * 60)) / 1000);
+
+  document.getElementById('daysCount').textContent  = days;
+  document.getElementById('hoursCount').textContent = String(hours).padStart(2,'0');
+  document.getElementById('minsCount').textContent  = String(mins).padStart(2,'0');
+  document.getElementById('secsCount').textContent  = String(secs).padStart(2,'0');
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// ── Entrance animation for photo stack ──
+document.addEventListener('DOMContentLoaded', () => {
+  const cards = document.querySelectorAll('.photo-card');
+  cards.forEach((c, i) => {
+    c.style.opacity = '0';
+    c.style.transform = c.style.transform + ' scale(0.7)';
+    setTimeout(() => {
+      c.style.transition = 'opacity 0.5s ease, transform 0.6s cubic-bezier(0.34,1.56,0.64,1)';
+      c.style.opacity = '1';
+      c.style.transform = '';
+    }, 300 + i * 120);
+  });
+});
+// Auto-play music on first click (browsers require user interaction)
+document.addEventListener('click', function startMusic() {
+  const audio = document.getElementById('bgMusic');
+  audio.play();
+  document.removeEventListener('click', startMusic);
+}, { once: true });
+</script>
+
+</body>
+</html>
